@@ -1,0 +1,84 @@
+version: '3'
+services:
+    nginx:
+        build:
+            context: ./
+            dockerfile: docker/nginx.docker
+        volumes:
+            - ./:/var/www
+            - ./docker/nginx/ssl:/etc/nginx/ssl
+        ports:
+            - "443:443"
+            - "80:80"
+        links:
+            - php-fpm
+            - php-cli
+    php-fpm:
+        build:
+            context: ./
+            dockerfile: docker/php-fpm.docker
+        volumes:
+            - ./:/var/www
+            - ./logs/php-fpm/:/tmp/xdebug_log
+        ports:
+            - "9001:9001"
+        expose:
+            - 9001
+        links:
+            - mysql
+            - redis
+            - node-socket-io
+        env_file:
+            - variables.env
+        environment:
+            XDEBUG_CONFIG: "remote_host=192.168.1.100"
+            PHP_IDE_CONFIG: "serverName=docker"
+            DB_PORT: 3306
+            DB_HOST: mysql
+            REDIS_PORT: 6379
+            REDIS_HOST: redis
+    php-cli:
+        build:
+            context: ./
+            dockerfile: docker/php-cli.docker
+        volumes:
+            - ./:/var/www
+        links:
+            - mysql
+            - redis
+        environment:
+            - "DB_PORT=3306"
+            - "DB_HOST=mysql"
+            - "DB_DATABASE=broadcast"
+            - "REDIS_PORT=6379"
+            - "REDIS_HOST=redis"
+        tty: true
+    mysql:
+        image: mysql:5.7
+        command: "--innodb_use_native_aio=0 --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci"
+        volumes:
+            - ./docker/mysql:/var/lib/mysql
+        env_file:
+            - variables.env
+        environment:
+            - "MYSQL_DATABASE=broadcast"
+        ports:
+            - "33061:3306"
+    redis:
+        image: redis:3.0
+        ports:
+            - "63791:6379"
+    node:
+        image: node:8.6-alpine
+        volumes:
+            - ./:/var/www
+        working_dir: /var/www
+        tty: true
+    node-socket-io:
+        image: node:8.6-alpine
+        volumes:
+            - ./:/var/www
+        working_dir: /var/www
+        ports:
+            - "6001:6001"
+        tty: true
