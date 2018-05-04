@@ -20,3 +20,8 @@ Vue.component('example-component', require('./components/ExampleComponent.vue'))
 const app = new Vue({
     el: '#app'
 });
+
+Echo.channel('public')
+    .listen('task', (e) => {
+        console.log('ok', e);
+    });

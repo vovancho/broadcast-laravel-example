@@ -11,6 +11,9 @@
 |
 */
 
+use App\Events\TaskEvent;
+
 Route::get('/', function () {
-    return view('welcome');
+    event(new TaskEvent());
+    return view('home');
 });
