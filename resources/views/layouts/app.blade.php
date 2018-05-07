@@ -16,6 +16,14 @@
     @yield('content')
 </main>
 
+<footer class="border-top">
+    <div class="container">
+        <div class="pt-3">
+            <p>&copy; {{ date('Y') }} - Broadcast Laravel Example</p>
+        </div>
+    </div>
+</footer>
+
 <!-- Scripts -->
 <script src="{{ mix('js/app.js') }}"></script>
 @yield('scripts')

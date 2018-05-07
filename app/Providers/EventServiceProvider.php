@@ -2,6 +2,9 @@
 
 namespace App\Providers;
 
+use App\Events\NewTaskEvent;
+use App\Events\TaskEvent;
+use App\Listeners\TaskListener;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
 
@@ -13,8 +16,8 @@ class EventServiceProvider extends ServiceProvider
      * @var array
      */
     protected $listen = [
-        'App\Events\Event' => [
-            'App\Listeners\EventListener',
+        NewTaskEvent::class => [
+            TaskListener::class,
         ],
     ];
 

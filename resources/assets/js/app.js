@@ -1,4 +1,3 @@
-
 /**
  * First we will load all of this project's JavaScript dependencies which
  * includes Vue and other libraries. It is a great starting point when
@@ -22,6 +21,12 @@ const app = new Vue({
 });
 
 Echo.channel('public')
-    .listen('task', (e) => {
-        console.log('ok', e);
+    .listen('.task', (e) => {
+        console.log(e);
+        var $buttons = $.inArray(e.task.status, ['in queue', 'execute']) < 0 ? '' : '<button type="button" class="btn btn-outline-danger btn-sm">Отменить</button>';
+
+        $('td.id[id="' + e.task.id + '"]')
+            .nextAll(".status").html(e.task.status_with_badge)
+            .nextAll(".percent").text(e.task.percent)
+            .nextAll(".buttons").html($buttons);
     });

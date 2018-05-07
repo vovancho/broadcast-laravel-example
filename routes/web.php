@@ -13,7 +13,5 @@
 
 use App\Events\TaskEvent;
 
-Route::get('/', function () {
-    event(new TaskEvent());
-    return view('home');
-});
+Route::get('/', 'TaskController@index')->name('index');
+Route::get('/new-task', 'TaskController@newTask')->name('new.task');
