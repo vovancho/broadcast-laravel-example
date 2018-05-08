@@ -6,27 +6,42 @@
 
 require('./bootstrap');
 
-window.Vue = require('vue');
-
-/**
- * Next, we will create a fresh Vue application instance and attach it to
- * the page. Then, you may begin adding components to this application
- * or customize the JavaScript scaffolding to fit your unique needs.
- */
-
-Vue.component('example-component', require('./components/ExampleComponent.vue'));
-
-const app = new Vue({
-    el: '#app'
-});
-
 Echo.channel('public')
-    .listen('.task', (e) => {
-        console.log(e);
-        var $buttons = $.inArray(e.task.status, ['in queue', 'execute']) < 0 ? '' : '<button type="button" class="btn btn-outline-danger btn-sm">Отменить</button>';
+    .listen('.task.iterate', (e) => {
+        // console.log(e);
 
-        $('td.id[id="' + e.task.id + '"]')
-            .nextAll(".status").html(e.task.status_with_badge)
-            .nextAll(".percent").text(e.task.percent)
-            .nextAll(".buttons").html($buttons);
+        let $tdKey = $('td.id[id="' + e.task.id + '"]');
+        let $pb = $tdKey.nextAll(".percent").find(".progress .progress-bar");
+        let $cancelButton = $tdKey.nextAll(".buttons").find("button.cancel");
+
+        $tdKey.nextAll(".status").html(e.task.status_with_badge);
+
+        $pb.attr("style", "width: " + e.task.percent + "%")
+            .attr("aria-valuenow", e.task.percent)
+            .attr("class", e.task.status_progressbar_class)
+            .text(e.task.percent + "%");
+
+        $.inArray(e.task.status, ['in queue', 'execute']) < 0
+            ? $cancelButton.addClass('d-none')
+            : $cancelButton.removeClass('d-none');
+    })
+    .listen('.task.cancel', (e) => {
+        let $tdKey = $('td.id[id="' + e.task.id + '"]');
+        let $pb = $tdKey.nextAll(".percent").find(".progress .progress-bar");
+        let $cancelButton = $tdKey.nextAll(".buttons").find("button.cancel");
+
+        $tdKey.nextAll(".status").html(e.task.status_with_badge);
+        $pb.attr("class", e.task.status_progressbar_class);
+        $cancelButton.addClass('d-none');
+        $cancelButton.attr("disabled", false);
     });
+
+$(".cancel").on('click', function (e) {
+    $(this).attr("disabled", true);
+
+    axios.post(route('task.cancel', $(this).attr("task-id")))
+        .catch(function (response) {
+            $(this).attr("disabled", false);
+            console.error(response);
+        });
+});

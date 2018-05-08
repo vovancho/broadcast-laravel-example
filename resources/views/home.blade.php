@@ -6,7 +6,10 @@
         <div class="card-body">
             <div class="card">
                 <div class="card-body">
-                    <a class="btn btn-primary new_task" href="{{ route('new.task') }}">Новая задача</a>
+                    <form method="POST" action="{{ route('task.new') }}">
+                        @csrf
+                        <button class="btn btn-primary new_task">Новая задача</button>
+                    </form>
                 </div>
             </div>
 
@@ -15,20 +18,24 @@
                 <tr>
                     <th>№</th>
                     <th class="d-none">id</th>
+                    <th>Дата</th>
                     <th>Задача</th>
                     <th>Статус</th>
                     <th>Процент выполнения</th>
-                    <th></th>
+                    <th style="width: 100px"></th>
                 </tr>
                 </thead>
                 <tbody class="tasks-body">
                 @foreach($tasks as $task)
                     <tr>
                         <td>
-                            {{ $loop->iteration }}
+                            {{ $loop->iteration + (($tasks->currentPage() - 1) * $tasks->perPage()) }}
                         </td>
                         <td class="id d-none" id="{{ $task->id }}">
                             {{ $task->id }}
+                        </td>
+                        <td>
+                            {{ $task->created_at->format('d.m.Y H:m:s') }}
                         </td>
                         <td>
                             {{ $task->name }}
@@ -37,12 +44,21 @@
                             {!! $task->status_with_badge !!}
                         </td>
                         <td class="percent">
-                            {{ $task->percent }}
+                            <div class="progress" style="height: 20px;">
+                                <div class="{{ $task->status_progressbar_class }}"
+                                     role="progressbar"
+                                     style="width: {{ $task->percent }}%"
+                                     aria-valuenow="{{ $task->percent }}" aria-valuemin="0"
+                                     aria-valuemax="100">{{ $task->percent }}%
+                                </div>
+                            </div>
                         </td>
-                        <td class="buttons">
-                            @if(in_array($task->status, [\App\Task::IN_QUEUE, \App\Task::EXECUTE]))
-                                <button type="button" class="btn btn-outline-danger btn-sm">Отменить</button>
-                            @endif
+                        <td style="width: 100px" class="buttons">
+                            <button type="button"
+                                    task-id="{{ $task->id }}"
+                                    class="btn btn-outline-danger btn-sm cancel {{in_array($task->status, [\App\Task::IN_QUEUE, \App\Task::EXECUTE]) ? '' : 'd-none'}}">
+                                Отменить
+                            </button>
                         </td>
                     </tr>
                 @endforeach
@@ -52,5 +68,4 @@
             {{ $tasks->links() }}
         </div>
     </div>
-
 @endsection

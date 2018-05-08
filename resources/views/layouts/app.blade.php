@@ -12,9 +12,10 @@
 
 </head>
 <body>
-<main role="main" id="app" class="container">
+@routes
+<div class="container">
     @yield('content')
-</main>
+</div>
 
 <footer class="border-top">
     <div class="container">

@@ -21,4 +21,14 @@ class TaskController extends Controller
         event(new NewTaskEvent($task));
         return redirect()->back();
     }
+
+    public function cancelTask(Task $task)
+    {
+        if (in_array($task->status, [Task::IN_QUEUE, Task::EXECUTE])) {
+            $task->status = Task::CANCEL;
+            $task->save();
+        }
+
+        return response()->json("Canceled");
+    }
 }

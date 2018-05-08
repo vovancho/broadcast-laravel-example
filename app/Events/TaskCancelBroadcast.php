@@ -8,7 +8,7 @@ use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 
-class TaskIterateBroadcast implements ShouldBroadcast
+class TaskCancelBroadcast implements ShouldBroadcast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
@@ -36,6 +36,6 @@ class TaskIterateBroadcast implements ShouldBroadcast
 
     public function broadcastAs()
     {
-        return 'task.iterate';
+        return 'task.cancel';
     }
 }

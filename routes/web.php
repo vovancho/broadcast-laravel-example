@@ -10,8 +10,6 @@
 | contains the "web" middleware group. Now create something great!
 |
 */
-
-use App\Events\TaskEvent;
-
-Route::get('/', 'TaskController@index')->name('index');
-Route::get('/new-task', 'TaskController@newTask')->name('new.task');
+Route::get('/', 'TaskController@index')->name('task.index');
+Route::post('/new-task', 'TaskController@newTask')->name('task.new');
+Route::post('/cancel-task/{task}', 'TaskController@cancelTask')->name('task.cancel');
