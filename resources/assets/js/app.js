@@ -6,42 +6,23 @@
 
 require('./bootstrap');
 
-Echo.channel('public')
-    .listen('.task.iterate', (e) => {
-        // console.log(e);
+window.Vue = require('vue');
 
-        let $tdKey = $('td.id[id="' + e.task.id + '"]');
-        let $pb = $tdKey.nextAll(".percent").find(".progress .progress-bar");
-        let $cancelButton = $tdKey.nextAll(".buttons").find("button.cancel");
+let moment = require('moment');
 
-        $tdKey.nextAll(".status").html(e.task.status_with_badge);
+exports.install = function (Vue, options) {
+    Vue.prototype.moment = function (...args) {
+        return moment(...args);
+    };
+    Vue.prototype.Echo = function (...args) {
+        return Echo(...args);
+    };
+}
 
-        $pb.attr("style", "width: " + e.task.percent + "%")
-            .attr("aria-valuenow", e.task.percent)
-            .attr("class", e.task.status_progressbar_class)
-            .text(e.task.percent + "%");
+Vue.use(exports);
 
-        $.inArray(e.task.status, ['in queue', 'execute']) < 0
-            ? $cancelButton.addClass('d-none')
-            : $cancelButton.removeClass('d-none');
-    })
-    .listen('.task.cancel', (e) => {
-        let $tdKey = $('td.id[id="' + e.task.id + '"]');
-        let $pb = $tdKey.nextAll(".percent").find(".progress .progress-bar");
-        let $cancelButton = $tdKey.nextAll(".buttons").find("button.cancel");
+Vue.component('tasks-component', require('./components/TasksComponent.vue'));
 
-        $tdKey.nextAll(".status").html(e.task.status_with_badge);
-        $pb.attr("class", e.task.status_progressbar_class);
-        $cancelButton.addClass('d-none');
-        $cancelButton.attr("disabled", false);
-    });
-
-$(".cancel").on('click', function (e) {
-    $(this).attr("disabled", true);
-
-    axios.post(route('task.cancel', $(this).attr("task-id")))
-        .catch(function (response) {
-            $(this).attr("disabled", false);
-            console.error(response);
-        });
+const app = new Vue({
+    el: '#app'
 });

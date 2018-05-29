@@ -13,7 +13,7 @@
 </head>
 <body>
 @routes
-<div class="container">
+<div id="app" class="container">
     @yield('content')
 </div>
 
