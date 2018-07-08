@@ -13,7 +13,7 @@
             </tr>
             </thead>
             <tbody class="tasks-body">
-            <tr v-for="(task, key, index) in tasks.data">
+            <tr v-for="(task, key) in tasks.data" :key="task.id">
                 <td>
                     {{ key + ((tasks.current_page - 1) * tasks.per_page) + 1 }}
                 </td>
